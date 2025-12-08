@@ -1,10 +1,18 @@
 package org.acme.controller;
 
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.Response;
+import org.acme.entity.ResourceEntity;
+import org.acme.repository.ResourceRepository;
+
+import java.util.List;
 
 @Path("/resources")
 public class ResourceController {
+
+    @Inject
+    ResourceRepository resourceRepository;
 
     @POST
     public Response createResource() {
@@ -13,13 +21,16 @@ public class ResourceController {
 
     @GET
     public Response getResources() {
-        return Response.ok().build();
+        List<ResourceEntity> allResources = resourceRepository.listAll();
+        return Response.ok(allResources).build();
     }
 
     @Path("/{id}")
     @GET
     public Response getResourceById(@PathParam("id") String id) {
-        return Response.ok().build();
+        return resourceRepository.getResourceById(Long.parseLong(id)) != null
+                ? Response.ok().build()
+                : Response.status(Response.Status.NOT_FOUND).build();
     }
 
     @Path("/{id}")
@@ -31,6 +42,9 @@ public class ResourceController {
     @Path("/{id}")
     @DELETE
     public Response deleteResource(@PathParam("id") String id) {
+        if (resourceRepository.isPersistent(resourceRepository.findById(Long.parseLong(id)))) {
+            resourceRepository.deleteById(Long.parseLong(id));
+        }
         return Response.noContent().build();
     }
 
