@@ -15,8 +15,8 @@ public class ResourceController {
     ResourceRepository resourceRepository;
 
     @POST
-    public Response createResource() {
-        return Response.status(Response.Status.CREATED).build();
+    public ResourceEntity createResource() {
+        return resourceRepository.createResource(new ResourceEntity());
     }
 
     @GET
@@ -27,10 +27,8 @@ public class ResourceController {
 
     @Path("/{id}")
     @GET
-    public Response getResourceById(@PathParam("id") String id) {
-        return resourceRepository.getResourceById(Long.parseLong(id)) != null
-                ? Response.ok().build()
-                : Response.status(Response.Status.NOT_FOUND).build();
+    public ResourceEntity getResourceById(@PathParam("id") Long id) {
+        return resourceRepository.findById(id);
     }
 
     @Path("/{id}")
@@ -41,11 +39,8 @@ public class ResourceController {
 
     @Path("/{id}")
     @DELETE
-    public Response deleteResource(@PathParam("id") String id) {
-        if (resourceRepository.isPersistent(resourceRepository.findById(Long.parseLong(id)))) {
-            resourceRepository.deleteById(Long.parseLong(id));
-        }
-        return Response.noContent().build();
+    public boolean deleteResource(@PathParam("id") Long id) {
+        return resourceRepository.deleteById(id);
     }
 
     @Path("/{id}/availability")

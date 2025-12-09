@@ -1,20 +1,18 @@
 package org.acme.repository;
 
-import io.quarkus.hibernate.orm.panache.Panache;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.acme.entity.ResourceEntity;
 
+import java.util.List;
+
 @ApplicationScoped
 public class ResourceRepository implements PanacheRepository<ResourceEntity> {
 
-    public Long getResourceById(Long id) {
-        ResourceEntity resource = findById(id);
-        return resource != null ? resource.getId() : null;
+
+    public ResourceEntity createResource(ResourceEntity resourceEntity) {
+        persist(resourceEntity);
+        return resourceEntity;
     }
 
-
-    public void deleteById() {
-
-    }
 }
