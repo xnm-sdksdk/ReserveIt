@@ -2,6 +2,7 @@ package org.acme.controller;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.acme.entity.ResourceEntity;
 import org.acme.repository.ResourceRepository;
@@ -9,14 +10,16 @@ import org.acme.repository.ResourceRepository;
 import java.util.List;
 
 @Path("/resources")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class ResourceController {
 
     @Inject
     ResourceRepository resourceRepository;
 
     @POST
-    public ResourceEntity createResource() {
-        return resourceRepository.createResource(new ResourceEntity());
+    public ResourceEntity createResource(ResourceEntity resource) {
+        return resourceRepository.createResource(resource);
     }
 
     @GET

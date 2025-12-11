@@ -6,7 +6,6 @@ import jakarta.persistence.Id;
 import lombok.*;
 
 @Entity
-@RequiredArgsConstructor
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -19,7 +18,7 @@ public class AuditEntity {
 
     private String resourceType;
 
-    private String resourceId;
+    private Long resourceId;
 
     private String performedBy;
 

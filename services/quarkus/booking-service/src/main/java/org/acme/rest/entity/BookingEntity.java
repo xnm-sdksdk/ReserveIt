@@ -6,10 +6,8 @@ import jakarta.persistence.Id;
 import lombok.*;
 
 import java.time.Instant;
-import java.util.Map;
 
 @Entity
-@RequiredArgsConstructor
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
@@ -18,7 +16,6 @@ public class BookingEntity {
     @Id
     @GeneratedValue
     private Long id;
-
     private Long resourceId;
     private Instant start;
     private Instant end;

@@ -1,8 +1,6 @@
 package org.acme.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -11,11 +9,11 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @Entity
-@RequiredArgsConstructor
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
 @Setter
+@Table(name = "resources")
 public class ResourceEntity {
     @Id
     @GeneratedValue
@@ -26,13 +24,25 @@ public class ResourceEntity {
 
     private String description;
 
-    private Map<String, Object> attributes;
+    //private Map<String, Object> attributes;
 
     private Integer quantity;
 
-    @CreationTimestamp
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
-    @UpdateTimestamp
+
+    @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @PrePersist
+    public void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
 }
