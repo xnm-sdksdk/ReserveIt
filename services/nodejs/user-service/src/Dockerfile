@@ -1,7 +1,7 @@
 # Use Node 20 as the base image from Docker Hub
 FROM node:20
 # Set working directory, where your app code will be copied
-WORKDIR /app
+WORKDIR /
 # Copy package.json and install dependencies
 COPY package*.json ./
 RUN npm install
