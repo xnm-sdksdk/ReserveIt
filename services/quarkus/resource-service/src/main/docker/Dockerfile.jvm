@@ -63,7 +63,7 @@
 #   (example: "20")
 # - GC_MAX_HEAP_FREE_RATIO: Maximum percentage of heap free after GC to avoid shrinking.
 #   (example: "40")
-# - GC_TIME_RATIO: Specifies the ratio of the time spent outside the garbage collection.
+# - GC_TIME_RATENTRYPOINT [ "/opt/jboss/container/java/run/run-java.sh" ]IO: Specifies the ratio of the time spent outside the garbage collection.
 #   (example: "4")
 # - GC_ADAPTIVE_SIZE_POLICY_WEIGHT: The weighting given to the current GC time versus
 #   previous GC times. (example: "90")
@@ -80,11 +80,13 @@
 ###
 FROM registry.access.redhat.com/ubi9/openjdk-17:1.23
 
-COPY --chown=185 services/resource-service/target/quarkus-app/*.jar /deployments/
-# No lib/, app/, quarkus/ in uber-jar
+WORKDIR /deployments
+
+COPY --chown=185 target/quarkus-app/ /deployments/
+
 EXPOSE 8080
 USER 185
-ENV JAVA_OPTS_APPEND="-Dquarkus.http.host=0.0.0.0 -Djava.util.logging.manager=org.jboss.logmanager.LogManager"
-ENV JAVA_APP_JAR="/deployments/quarkus-run.jar"
 
-ENTRYPOINT [ "/opt/jboss/container/java/run/run-java.sh" ]
+ENV JAVA_OPTS="-Dquarkus.http.host=0.0.0.0"
+
+CMD ["java","-jar","quarkus-run.jar"]
