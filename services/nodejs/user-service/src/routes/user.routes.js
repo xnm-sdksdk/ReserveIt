@@ -1,13 +1,18 @@
 const express = require("express");
-const { registerUser } = require("../controller/user.controller");
 const router = express.Router();
+const User = require("../entity/user.entity")
+const UserService = require("../service/user.service")
+const UserController = require('../controllers/UserController');
 
+const userRepo = new UserRepository(User);
+const userService = new UserService(userRepo);
+const userController = new UserController(userService);
 
 // Base Routes
 // get all users
-router.get("/users")
+router.get("/users", userController.getAllUsers)
 // create new user 
-router.post("/users", registerUser)
+router.post("/users", userController.registerUser)
 // get user by id
 router.get("/users/:id")
 // update user details
