@@ -1,4 +1,5 @@
-const express = require("express")
+const express = require("express");
+const { registerUser } = require("../controller/user.controller");
 const router = express.Router();
 
 
@@ -6,7 +7,7 @@ const router = express.Router();
 // get all users
 router.get("/users")
 // create new user 
-router.post("/users")
+router.post("/users", registerUser)
 // get user by id
 router.get("/users/:id")
 // update user details
