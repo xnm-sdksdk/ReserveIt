@@ -14,7 +14,7 @@ router.get("/users", userController.getAllUsers)
 // create new user 
 router.post("/users", userController.registerUser)
 // get user by id
-router.get("/users/:id")
+router.get("/users/:id", userController.getUserById)
 // update user details
 router.patch("/users/:id")
 // delete user

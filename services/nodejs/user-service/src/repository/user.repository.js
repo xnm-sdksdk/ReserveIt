@@ -5,8 +5,12 @@ class UserRepository {
         this.User = User;
     }
 
-    async getAllUsers() {
+    getAllUsers() {
         return this.User.find();
+    }
+
+    createUser() {
+        return this.User.create();
     }
 }
 
