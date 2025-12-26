@@ -1,21 +1,26 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const { getDBConnection } = require("./data-access/ConnectionFactory");
+import express from "express";
+import mongoose from "mongoose";
+import userRoutes from "./routes/user.routes.js";
+import { getDBConnection } from "./data-access/ConnectionFactory.js";
 const app = express();
 const PORT = 3002;
 
-getDBConnection().catch(err => {
-    console.error('Failed to connect to MongoDB', err);
+app.use(express.json());
+
+getDBConnection().catch((err) => {
+    console.error("Failed to connect to MongoDB", err);
     process.exit(1);
 });
 
-app.get('/health', (req, res) => {
+app.get("/health", (req, res) => {
     if (mongoose.connection.readyState === 1) {
-        res.status(200).send('OK');
+        res.status(200).send("OK");
     } else {
-        res.status(500).send('MongoDB not connected');
+        res.status(500).send("MongoDB not connected");
     }
 });
 
+
+app.use("/api/user", userRoutes);
 
 app.listen(PORT, () => console.log(`User Service running on port ${PORT}`));

@@ -27,9 +27,9 @@ const userEntity = new mongoose.Schema({
     },
 });
 
-userEntity.pre("save", async (next) => {
+userEntity.pre("save", async function (next) {
     try {
-        if (!this.isModified("password")) return next();
+        if (!this.isModified("password")) return;
         const salt = await bcrypt.genSalt(10);
         this.password = await bcrypt.hash(this.password, salt);
     } catch (error) {
@@ -45,4 +45,4 @@ userEntity.methods.isValidPassword = async function (password) {
     }
 };
 
-module.exports = mongoose.model("User", userEntity);
+export default mongoose.model("User", userEntity);

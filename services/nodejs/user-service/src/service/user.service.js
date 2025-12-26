@@ -1,4 +1,6 @@
-class UserService {
+
+
+export default class UserService {
     constructor(userRepository) {
         this.userRepository = userRepository;
     }
@@ -7,9 +9,7 @@ class UserService {
         return this.userRepository.findAll();
     }
 
-    async registerUser() {
-        return this.userRepository.createUser();
+    async registerUser(userData) {
+        return this.userRepository.createUser(userData);
     }
 }
-
-module.exports = UserService;

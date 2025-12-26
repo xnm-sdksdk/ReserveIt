@@ -1,59 +1,39 @@
-const express = require("express");
-const router = express.Router();
-const User = require("../entity/user.entity")
-const UserService = require("../service/user.service")
-const UserController = require('../controllers/UserController');
+import express from "express";
+import UserRepository from "../repository/user.repository.js";
+import UserService from "../service/user.service.js";
+import UserController from "../controller/userController.js";
 
-const userRepo = new UserRepository(User);
+const router = express.Router();
+
+const userRepo = new UserRepository();
 const userService = new UserService(userRepo);
 const userController = new UserController(userService);
 
-// Base Routes
-// get all users
-router.get("/users", userController.getAllUsers)
-// create new user 
-router.post("/users", userController.registerUser)
-// get user by id
-router.get("/users/:id", userController.getUserById)
-// update user details
-router.patch("/users/:id")
-// delete user
-router.delete("/users/:id")
+// Base routes
+router.get("/users", userController.getAllUsers);
+router.post("/users", userController.registerUser);
+router.get("/users/:id", userController.getUserById);
+// router.patch("/users/:id", userController.updateUser);
+// router.delete("/users/:id", userController.deleteUser);
 
-// profile mgmt
-// get user profile
-router.get("/users/:id/profile")
-// update profile
-router.patch("/users/:id/profile")
+// // Profile management
+// router.get("/users/:id/profile", userController.getProfile);
+// router.patch("/users/:id/profile", userController.updateProfile);
 
-// auth
-//login
-router.post("/auth/login")
-// logout
-router.post("/auth/logout")
-// refresh token
-router.post("/auth/refresh-token")
-// change pwd
-router.post("/auth/change-password")
+// // Authentication
+// router.post("/auth/login", userController.login);
+// router.post("/auth/logout", userController.logout);
+// router.post("/auth/refresh-token", userController.refreshToken);
+// router.post("/auth/change-password", userController.changePassword);
 
+// // Role management
+// router.post("/users/:id/roles", userController.assignRole);
+// router.get("/users/:id/roles", userController.getRoles);
+// router.delete("/users/:id/roles/:roleId", userController.removeRole);
 
-// role mgmt
-// assign role
-router.post("/users/:id/roles")
-// get roles
-router.get("/users/:id/roles")
-// remove role
-router.delete("/users/:id/roles/:roleId")
+// // Search, filter, pagination
+// router.get("/users/search", userController.searchUsers);
+// router.get("/users", userController.filterUsers);
+// router.get("/users", userController.paginateUsers);
 
-// search and filter
-// search users
-router.get("/users/search")
-// filter by status
-router.get("/users?status")
-// filter by role
-router.get("/users?role")
-// pagination
-router.get("/users?page")
-
-
-module.exports = router;
+export default router;

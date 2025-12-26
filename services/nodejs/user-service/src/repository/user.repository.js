@@ -1,17 +1,27 @@
-const { default: User } = require("../entity/user.entity");
+import User from "../entity/user.entity.js";
 
-class UserRepository {
-    constructor(User) {
-        this.User = User;
+export default class UserRepository {
+    constructor(UserModel = User) {
+        this.User = UserModel;
     }
 
-    getAllUsers() {
-        return this.User.find();
+    async findAll() {
+        return await this.User.find();
     }
 
-    createUser() {
-        return this.User.create();
+    async createUser(userData) {
+        return await this.User.create(userData);
+    }
+
+    async findById(id) {
+        return await this.User.findById(id);
+    }
+
+    async updateUser(id, updateData) {
+        return await this.User.findByIdAndUpdate(id, updateData, { new: true });
+    }
+
+    async deleteUser(id) {
+        return await this.User.findByIdAndDelete(id);
     }
 }
-
-module.exports = UserRepository;
