@@ -16,7 +16,7 @@ app.get("/health", (req, res) => {
     if (mongoose.connection.readyState === 1) {
         res.status(200).send("OK");
     } else {
-        res.status(500).send("MongoDB not connected");
+        res.status(500).send("MongoDB User not connected");
     }
 });
 

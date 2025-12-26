@@ -15,7 +15,7 @@ export default class UserController {
             const users = await this.userService.getAllUsers();
             res.json(users);
         } catch (error) {
-            console.log(error);
+            console.error(error);
             res.status(500).json({ error: "Internal server error" });
         }
     }
