@@ -167,7 +167,7 @@ services:
       - mongo-availability
       - rabbitmq
     environment:
-      AVAILABILITY_MONGO_URL: mongodb://${AVAILABILITY_DB}:${AVAILABILITY_PWD}@mongo-availability:27017
+      AVAILABILITY_MONGO_URL: mongodb://${AVAILABILITY_DB}:${AVAILABILITY_PWD}@mongo-availability:27017/availabilitydb?authSource=admin
       RABBITMQ_HOST: rabbitmq
     ports:
       - "${AVAILABILITY_SERVICE}:3000"
@@ -184,7 +184,7 @@ services:
       - mongo-notification
       - rabbitmq
     environment:
-      NOTIFICATION_MONGO_URL: mongodb://${NOTIFICATION_DB}:${NOTIFICATION_PWD}@mongo-notification:27017
+      NOTIFICATION_MONGO_URL: mongodb://${NOTIFICATION_DB}:${NOTIFICATION_PWD}@mongo-notification:27017/notificationdb?authSource=admin
       RABBITMQ_HOST: rabbitmq
     ports:
       - "${NOTIFICATION_SERVICE}:3000"
