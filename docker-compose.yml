@@ -146,8 +146,12 @@ services:
     container_name: user-service
     depends_on:
       - mongo-user
+    env_file:
+      - ./.env
     environment:
-      USER_MONGO_URL: mongodb://${USER_DB}:${USER_PWD}@mongo-user:27017
+      USER_MONGO_URL: mongodb://${USER_DB}:${USER_PWD}@mongo-user:27017/userdb?authSource=admin
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: 1h
     ports:
       - "${USER_SERVICE}:3000"
     healthcheck:

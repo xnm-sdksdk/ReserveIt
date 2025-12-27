@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const notificationSchema = new mongoose.Schema(
+const notificationEntity = new mongoose.Schema(
     {
         userId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -43,6 +43,6 @@ const notificationSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
-notificationSchema.index({ userId: 1, read: 1, sentAt: -1 });
+notificationEntity.index({ userId: 1, read: 1, sentAt: -1 });
 
-export default mongoose.model("Notification", notificationSchema);
+export default mongoose.model("Notification", notificationEntity);

@@ -39,6 +39,6 @@ const availabilityEntity = new mongoose.Schema(
     { timestamps: true }
 );
 
-availabilitySchema.index({ resourceId: 1, start: 1, end: 1 });
+availabilityEntity.index({ resourceId: 1, start: 1, end: 1 });
 
 export default mongoose.model("Availability", availabilityEntity);

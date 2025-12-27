@@ -21,10 +21,10 @@ router.get("/users/:id", userController.getUserById);
 // router.patch("/users/:id/profile", userController.updateProfile);
 
 // // Authentication
-// router.post("/auth/login", userController.login);
-// router.post("/auth/logout", userController.logout);
-// router.post("/auth/refresh-token", userController.refreshToken);
-// router.post("/auth/change-password", userController.changePassword);
+router.post("/auth/login", userController.login);
+router.post("/auth/logout", userController.logout);
+router.post("/auth/refresh-token", userController.refreshToken);
+router.post("/auth/change-password", userController.changePassword);
 
 // // Role management
 // router.post("/users/:id/roles", userController.assignRole);

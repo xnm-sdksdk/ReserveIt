@@ -2,8 +2,12 @@ import express from "express";
 import mongoose from "mongoose";
 import userRoutes from "./routes/user.routes.js";
 import { getDBConnection } from "./data-access/ConnectionFactory.js";
+import dotenv from "dotenv";
+
 const app = express();
 const PORT = 3002;
+
+dotenv.config();
 
 app.use(express.json());
 
