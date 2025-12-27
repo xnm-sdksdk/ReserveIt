@@ -1,8 +1,8 @@
-const express = require("express")
+import express from "express";
 const router = express.Router();
 
-router.post("notifications/send")
-router.post("notifications/batch")
-router.get("notifications/user/:id")
+router.post("/send")
+router.post("/batch")
+router.get("/user/:id")
 
-module.exports = router;
+export default router;

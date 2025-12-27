@@ -1,13 +1,12 @@
+export default class NotificationController {
+    constructor(notificationService) {
+        this.notificationService = notificationService;
+        this.getNotificationByUserId = this.getNotificationByUserId.bind(this);
+    }
 
+    async sendNotification(req, res) { }
 
-exports.sendNotification = async (req, res) => {
+    async initiateBatch(req, res) { }
 
-}
-
-exports.initiateBatch = async (req, res) => {
-
-}
-
-exports.getNotificationByUserId = async (req, res) => {
-
+    async getNotificationByUserId(req, res) { }
 }
