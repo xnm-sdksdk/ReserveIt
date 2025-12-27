@@ -1,7 +1,7 @@
 import express from "express";
 import UserRepository from "../repository/user.repository.js";
 import UserService from "../service/user.service.js";
-import UserController from "../controller/userController.js";
+import UserController from "../controller/user.controller.js";
 
 const router = express.Router();
 
@@ -22,7 +22,7 @@ router.get("/users/:id", userController.getUserById);
 
 // // Authentication
 router.post("/auth/login", userController.login);
-router.post("/auth/logout", userController.logout);
+router.delete("/auth/logout", userController.logout);
 router.post("/auth/refresh-token", userController.refreshToken);
 router.post("/auth/change-password", userController.changePassword);
 

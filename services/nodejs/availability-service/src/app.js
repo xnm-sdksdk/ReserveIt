@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import availabilityRoutes from "./routes/availability.routes.js";
 import { getDBConnection } from "./data-access/ConnectionFactory.js";
+
 const app = express();
 const PORT = 3000;
 

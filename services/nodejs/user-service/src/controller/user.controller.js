@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import User from "../entity/user.entity.js";
-import UserService from "../service/user.service.js";
 import bcrypt from "bcrypt";
+import RefreshToken from "../entity/token.entity.js";
 
 export default class UserController {
     constructor(userService) {
@@ -62,17 +62,28 @@ export default class UserController {
                 return res.status(401).json({ message: "Invalid credentials" });
             }
 
-            const token = jwt.sign(
-                {
-                    sub: user._id,
-                    email: user.email,
-                },
+            await RefreshToken.deleteMany({ userId: user._id });
+
+            const accessToken = jwt.sign(
+                { sub: user._id, email: user.email },
                 process.env.JWT_SECRET,
-                { expiresIn: process.env.JWT_EXPIRES_IN }
+                { expiresIn: "15m" }
             );
 
+            const refreshToken = crypto.randomBytes(64).toString("hex");
+
+            await RefreshToken.create({
+                userId: user._id,
+                tokenHash: crypto
+                    .createHash("sha256")
+                    .update(refreshToken)
+                    .digest("hex"),
+                expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+            });
+
             return res.status(200).json({
-                token,
+                accessToken,
+                refreshToken,
                 user: {
                     id: user._id,
                     email: user.email,
@@ -85,7 +96,27 @@ export default class UserController {
         }
     }
 
-    async logout(req, res) { }
+    async logout(req, res) {
+        try {
+            const { refreshToken } = req.body;
+
+            if (!refreshToken) {
+                return res.sendStatus(204);
+            }
+
+            const tokenHash = crypto
+                .createHash("sha256")
+                .update(refreshToken)
+                .digest("hex");
+
+            await RefreshToken.deleteOne({ tokenHash });
+
+            return res.status(200).json({ message: "Logged out" });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json({ message: "Internal server error" });
+        }
+    }
 
     async refreshToken(req, res) { }
 
