@@ -2,6 +2,7 @@ import express from "express";
 import UserRepository from "../repository/user.repository.js";
 import UserService from "../service/user.service.js";
 import UserController from "../controller/user.controller.js";
+import { authenticate } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
@@ -10,9 +11,9 @@ const userService = new UserService(userRepo);
 const userController = new UserController(userService);
 
 // Base routes
-router.get("/users", userController.getAllUsers);
+router.get("/users", authenticate, userController.getAllUsers);
 router.post("/users", userController.registerUser);
-router.get("/users/:id", userController.getUserById);
+router.get("/users/:id", authenticate, userController.getUserById);
 // router.patch("/users/:id", userController.updateUser);
 // router.delete("/users/:id", userController.deleteUser);
 
@@ -24,7 +25,8 @@ router.get("/users/:id", userController.getUserById);
 router.post("/auth/login", userController.login);
 router.delete("/auth/logout", userController.logout);
 router.post("/auth/refresh-token", userController.refreshToken);
-router.post("/auth/change-password", userController.changePassword);
+router.post("/auth/change-password", authenticate, userController.changePassword);
+router.post("/auth/validate", userController.validateToken);
 
 // // Role management
 // router.post("/users/:id/roles", userController.assignRole);

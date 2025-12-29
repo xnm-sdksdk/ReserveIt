@@ -2,6 +2,8 @@ import jwt from "jsonwebtoken";
 import User from "../entity/user.entity.js";
 import bcrypt from "bcrypt";
 import RefreshToken from "../entity/token.entity.js";
+import { JWT_OPTIONS, PRIVATE_KEY } from "../config/jwt.js";
+import { randomBytes, createHash } from "crypto";
 
 export default class UserController {
     constructor(userService) {
@@ -65,19 +67,23 @@ export default class UserController {
             await RefreshToken.deleteMany({ userId: user._id });
 
             const accessToken = jwt.sign(
-                { sub: user._id, email: user.email },
-                process.env.JWT_SECRET,
-                { expiresIn: "15m" }
+                {
+                    sub: user._id.toString(),
+                    email: user.email,
+                    roles: user.roles,
+                },
+                PRIVATE_KEY,
+                {
+                    ...JWT_OPTIONS,
+                    expiresIn: "15m",
+                }
             );
 
-            const refreshToken = crypto.randomBytes(64).toString("hex");
+            const refreshToken = randomBytes(64).toString("hex");
 
             await RefreshToken.create({
                 userId: user._id,
-                tokenHash: crypto
-                    .createHash("sha256")
-                    .update(refreshToken)
-                    .digest("hex"),
+                tokenHash: createHash("sha256").update(refreshToken).digest("hex"),
                 expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             });
 
@@ -121,4 +127,24 @@ export default class UserController {
     async refreshToken(req, res) { }
 
     async changePassword(req, res) { }
+
+    async validateToken(req, res) {
+        const auth = req.headers.authorization;
+        if (!auth) {
+            return res.sendStatus(401);
+        }
+
+        const token = auth.split(" ")[1];
+        try {
+            const payload = jwt.verify(token, PUBLIC_KEY, {
+                algorithms: ["RS256"],
+                issuer: "user-service",
+            });
+            res.setHeader("X-User-Id", payload.sub);
+            res.setHeader("X-User-Roles", payload.roles?.join(","));
+            return res.sendStatus(200);
+        } catch (error) {
+            console.error(error);
+        }
+    }
 }

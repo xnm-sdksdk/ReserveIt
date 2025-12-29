@@ -93,6 +93,8 @@ services:
       QUARKUS_DATASOURCE_PASSWORD: ${RESOURCE_PWD}
     ports:
       - "${RESOURCES_SERVICE}:8080"
+    volumes:
+      - ./jwt_public.pem:/deployments/jwt_public.pem:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/q/health/ready"]
       interval: 30s
@@ -113,6 +115,8 @@ services:
       QUARKUS_DATASOURCE_PASSWORD: ${BOOKING_PWD}
     ports:
       - "${BOOKING_SERVICE}:8080"
+    volumes:
+      - ./jwt_public.pem:/deployments/jwt_public.pem:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/q/health/ready"]
       interval: 30s
@@ -133,6 +137,8 @@ services:
       QUARKUS_DATASOURCE_PASSWORD: ${AUDIT_PWD}
     ports:
       - "${AUDIT_SERVICE}:8080"
+    volumes:
+      - ./jwt_public.pem:/deployments/jwt_public.pem:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/q/health/ready"]
       interval: 30s
@@ -154,6 +160,9 @@ services:
       JWT_EXPIRES_IN: 1h
     ports:
       - "${USER_SERVICE}:3000"
+    volumes:
+      - ./jwt_private.pem:/jwt_private.pem:ro
+      - ./jwt_public.pem:/jwt_public.pem:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
@@ -171,6 +180,8 @@ services:
       RABBITMQ_HOST: rabbitmq
     ports:
       - "${AVAILABILITY_SERVICE}:3000"
+    volumes:
+      - ./jwt_public.pem:/jwt_public.pem:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
@@ -188,6 +199,8 @@ services:
       RABBITMQ_HOST: rabbitmq
     ports:
       - "${NOTIFICATION_SERVICE}:3000"
+    volumes:
+      - ./jwt_public.pem:/jwt_public.pem:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 30s
