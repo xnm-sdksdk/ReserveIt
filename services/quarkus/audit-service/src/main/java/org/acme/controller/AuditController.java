@@ -4,10 +4,15 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
+@RolesAllowed("USER")
 @Path("/audits")
+@RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class AuditController {
+
+    @Inject
+    JsonWebToken jwt;
 
     @GET
     @Path("/user/{id}")

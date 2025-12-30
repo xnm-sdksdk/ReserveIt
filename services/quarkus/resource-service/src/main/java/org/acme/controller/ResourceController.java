@@ -9,10 +9,15 @@ import org.acme.repository.ResourceRepository;
 
 import java.util.List;
 
+@RolesAllowed("USER")
 @Path("/resources")
+@RequestScoped
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ResourceController {
+
+    @Inject
+    JsonWebToken jwt;
 
     @Inject
     ResourceRepository resourceRepository;
