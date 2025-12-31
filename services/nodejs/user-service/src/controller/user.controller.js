@@ -70,7 +70,7 @@ export default class UserController {
                 {
                     sub: user._id.toString(),
                     email: user.email,
-                    roles: user.roles,
+                    groups: ["USER"]
                 },
                 PRIVATE_KEY,
                 {

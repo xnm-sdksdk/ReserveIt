@@ -6,8 +6,7 @@ export default class AvailabilityController {
 
     async getAllAvailabilities(req, res) {
         try {
-            const availabilities =
-                await this.availabilityService.getAllAvailabilities();
+            const availabilities = await this.availabilityService.getAllAvailabilities();
             res.json(availabilities);
         } catch (error) {
             console.error(error);

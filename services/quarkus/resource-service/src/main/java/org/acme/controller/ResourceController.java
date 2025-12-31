@@ -1,13 +1,17 @@
 package org.acme.controller;
 
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.acme.entity.ResourceEntity;
 import org.acme.repository.ResourceRepository;
+import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.List;
+import java.util.Map;
 
 @RolesAllowed("USER")
 @Path("/resources")
@@ -17,10 +21,11 @@ import java.util.List;
 public class ResourceController {
 
     @Inject
-    JsonWebToken jwt;
+    ResourceRepository resourceRepository;
 
     @Inject
-    ResourceRepository resourceRepository;
+    JsonWebToken jwt;
+
 
     @POST
     public ResourceEntity createResource(ResourceEntity resource) {
@@ -47,8 +52,15 @@ public class ResourceController {
 
     @Path("/{id}")
     @DELETE
-    public boolean deleteResource(@PathParam("id") Long id) {
-        return resourceRepository.deleteById(id);
+    @RolesAllowed("USER")
+    public Response deleteResource(@PathParam("id") Long id) {
+        boolean deleted = resourceRepository.deleteById(id);
+
+        if (!deleted) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
+        return Response.noContent().build();
     }
 
     @Path("/{id}/availability")
@@ -56,6 +68,16 @@ public class ResourceController {
     public Response checkAvailability(@PathParam("id") String id) {
         // This method will call the availability service
         return Response.ok().build();
+    }
+
+    @GET
+    @Path("/test")
+    public Object test() {
+        return Map.of(
+                "sub", jwt.getSubject(),
+                "email", jwt.getClaim("email"),
+                "groups", jwt.getGroups()
+        );
     }
 
 }
