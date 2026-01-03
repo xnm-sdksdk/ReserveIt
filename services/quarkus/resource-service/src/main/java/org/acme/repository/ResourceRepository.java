@@ -14,4 +14,9 @@ public class ResourceRepository implements PanacheRepository<ResourceEntity> {
         return resourceEntity;
     }
 
+    @Transactional
+    public boolean deleteResource(Long id) {
+        return deleteById(id);
+    }
+
 }

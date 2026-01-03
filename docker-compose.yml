@@ -6,6 +6,8 @@ services:
   postgres-booking:
     image: postgres:15
     container_name: postgres_booking
+    mem_limit: 768m
+    cpus: "1.0"
     environment:
       POSTGRES_DB: ${BOOKING_DB}
       POSTGRES_USER: ${BOOKING_USER}
@@ -14,9 +16,18 @@ services:
       - "5435:5432"
     volumes:
       - booking-db:/var/lib/postgresql/data
+    command: >
+      postgres
+      -c shared_buffers=128MB
+      -c work_mem=4MB
+      -c maintenance_work_mem=64MB
+      -c max_connections=50
+      -c effective_cache_size=256MB
   postgres-resource:
     image: postgres:15
     container_name: postgres_resource
+    mem_limit: 768m
+    cpus: "1.0"
     environment:
       POSTGRES_DB: ${RESOURCE_DB}
       POSTGRES_USER: ${RESOURCE_USER}
@@ -25,9 +36,18 @@ services:
       - "5434:5432"
     volumes:
       - resource-db:/var/lib/postgresql/data
+    command: >
+      postgres
+      -c shared_buffers=128MB
+      -c work_mem=4MB
+      -c maintenance_work_mem=64MB
+      -c max_connections=50
+      -c effective_cache_size=256MB
   postgres-audit:
     image: postgres:15
     container_name: postgres_audit
+    mem_limit: 768m
+    cpus: "1.0"
     environment:
       POSTGRES_DB: ${AUDIT_DB}
       POSTGRES_USER: ${AUDIT_USER}
@@ -36,6 +56,13 @@ services:
       - "5433:5432"
     volumes:
       - audit-db:/var/lib/postgresql/data
+    command: >
+      postgres
+      -c shared_buffers=128MB
+      -c work_mem=4MB
+      -c maintenance_work_mem=64MB
+      -c max_connections=50
+      -c effective_cache_size=256MB
   # MongoDB
   mongo-user:
     image: mongo:6
@@ -43,35 +70,44 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${USER_DB}
       MONGO_INITDB_ROOT_PASSWORD: ${USER_PWD}
+    mem_limit: 384m
+    cpus: "0.5"
     ports:
       - "27017:27017"
     volumes:
       - mongo-user-db:/data/db
+    command: ["mongod", "--wiredTigerCacheSizeGB", "0.25"]
   mongo-notification:
     image: mongo:6
     container_name: mongo_notification
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${NOTIFICATION_DB}
       MONGO_INITDB_ROOT_PASSWORD: ${NOTIFICATION_PWD}
+    mem_limit: 384m
+    cpus: "0.5"
     ports:
       - "27018:27017"
     volumes:
       - mongo-notification-db:/data/db
+    command: ["mongod", "--wiredTigerCacheSizeGB", "0.25"]
 
-  mongo-availability:
-    image: mongo:6
-    container_name: mongo_availability
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${AVAILABILITY_DB}
-      MONGO_INITDB_ROOT_PASSWORD: ${AVAILABILITY_PWD}
-    ports:
-      - "27019:27017"
-    volumes:
-      - mongo-availability-db:/data/db
+  # mongo-availability:
+  #   image: mongo:6
+  #   container_name: mongo_availability
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: ${AVAILABILITY_DB}
+  #     MONGO_INITDB_ROOT_PASSWORD: ${AVAILABILITY_PWD}
+  #   mem_limit: 384m
+  #   ports:
+  #     - "27019:27017"
+  #   volumes:
+  #     - mongo-availability-db:/data/db
   # Message Queue
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
+    mem_limit: 256m
+    cpus: "0.5"
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
@@ -85,12 +121,15 @@ services:
       context: ./services/quarkus/resource-service
       dockerfile: src/main/docker/Dockerfile.jvm
     container_name: resource-service
+    mem_limit: 384m
+    cpus: "0.5"
     depends_on:
       - postgres-resource
     environment:
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres-resource:5432/${RESOURCE_DB}
       QUARKUS_DATASOURCE_USERNAME: ${RESOURCE_USER}
       QUARKUS_DATASOURCE_PASSWORD: ${RESOURCE_PWD}
+      JAVA_OPTS: "-Xms128m -Xmx256m"
     ports:
       - "${RESOURCES_SERVICE}:8080"
     volumes:
@@ -106,6 +145,8 @@ services:
       context: ./services/quarkus/booking-service
       dockerfile: src/main/docker/Dockerfile.jvm
     container_name: booking-service
+    mem_limit: 384m
+    cpus: "0.5"
     depends_on:
       - postgres-booking
       - rabbitmq
@@ -113,6 +154,7 @@ services:
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres-booking:5432/${BOOKING_DB}
       QUARKUS_DATASOURCE_USERNAME: ${BOOKING_USER}
       QUARKUS_DATASOURCE_PASSWORD: ${BOOKING_PWD}
+      JAVA_OPTS: "-Xms128m -Xmx256m"
     ports:
       - "${BOOKING_SERVICE}:8080"
     volumes:
@@ -129,12 +171,15 @@ services:
       context: ./services/quarkus/audit-service
       dockerfile: src/main/docker/Dockerfile.jvm
     container_name: audit-service
+    mem_limit: 384m
+    cpus: "0.5"
     depends_on:
       - postgres-audit
     environment:
       QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://postgres-audit:5432/${AUDIT_DB}
       QUARKUS_DATASOURCE_USERNAME: ${AUDIT_USER}
       QUARKUS_DATASOURCE_PASSWORD: ${AUDIT_PWD}
+      JAVA_OPTS: "-Xms128m -Xmx256m"
     ports:
       - "${AUDIT_SERVICE}:8080"
     volumes:
@@ -156,6 +201,7 @@ services:
       - ./.env
     environment:
       USER_MONGO_URL: mongodb://${USER_DB}:${USER_PWD}@mongo-user:27017/userdb?authSource=admin
+      NODE_OPTIONS: "--max-old-space-size=128"
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: 1h
     ports:
@@ -169,25 +215,27 @@ services:
       timeout: 10s
       retries: 3
       start_period: 15s
-  availability-service:
-    build: ./services/nodejs/availability-service/src
-    container_name: availability-service
-    depends_on:
-      - mongo-availability
-      - rabbitmq
-    environment:
-      AVAILABILITY_MONGO_URL: mongodb://${AVAILABILITY_DB}:${AVAILABILITY_PWD}@mongo-availability:27017/availabilitydb?authSource=admin
-      RABBITMQ_HOST: rabbitmq
-    ports:
-      - "${AVAILABILITY_SERVICE}:3000"
-    volumes:
-      - ./jwt_public.pem:/jwt_public.pem:ro
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 15s
+  # availability-service:
+  #   build: ./services/nodejs/availability-service/src
+  #   container_name: availability-service
+  #   depends_on:
+  #     - mongo-availability
+  #     - rabbitmq
+  #   environment:
+  #     AVAILABILITY_MONGO_URL: mongodb://${AVAILABILITY_DB}:${AVAILABILITY_PWD}@mongo-availability:27017/availabilitydb?authSource=admin
+  #     RABBITMQ_HOST: rabbitmq
+  #     NODE_OPTIONS: "--max-old-space-size=128"
+
+  #   ports:
+  #     - "${AVAILABILITY_SERVICE}:3000"
+  #   volumes:
+  #     - ./jwt_public.pem:/jwt_public.pem:ro
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
+  #     start_period: 15s
   notification-service:
     build: ./services/nodejs/notification-service/src
     container_name: notification-service
@@ -197,6 +245,7 @@ services:
     environment:
       NOTIFICATION_MONGO_URL: mongodb://${NOTIFICATION_DB}:${NOTIFICATION_PWD}@mongo-notification:27017/notificationdb?authSource=admin
       RABBITMQ_HOST: rabbitmq
+      NODE_OPTIONS: "--max-old-space-size=128"
     ports:
       - "${NOTIFICATION_SERVICE}:3000"
     volumes:
@@ -214,9 +263,11 @@ services:
       context: ./api-gateway
       dockerfile: Dockerfile
     container_name: api-gateway
+    mem_limit: 128m
+    cpus: "0.25"
     depends_on:
       - resource-service
-      - availability-service
+      #- availability-service
       - notification-service
       - audit-service
       - user-service
@@ -236,4 +287,4 @@ volumes:
   audit-db:
   mongo-user-db:
   mongo-notification-db:
-  mongo-availability-db:
+  #mongo-availability-db:

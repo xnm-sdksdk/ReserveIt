@@ -28,6 +28,7 @@ public class ResourceController {
 
 
     @POST
+    @RolesAllowed("USER")
     public ResourceEntity createResource(ResourceEntity resource) {
         return resourceRepository.createResource(resource);
     }
@@ -54,7 +55,7 @@ public class ResourceController {
     @DELETE
     @RolesAllowed("USER")
     public Response deleteResource(@PathParam("id") Long id) {
-        boolean deleted = resourceRepository.deleteById(id);
+        boolean deleted = resourceRepository.deleteResource(id);
 
         if (!deleted) {
             return Response.status(Response.Status.NOT_FOUND).build();
