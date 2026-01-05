@@ -5,3 +5,14 @@ ReserveIt is a web application designed to facilitate the reservation of resourc
 # Build Java Package with Maven
 
 `./mvnw clean package -Dquarkus.package.type=uber-jar`
+
+# Using docker compose
+
+- To Build the compose file
+  `docker compose build`
+
+- To Run the compose file
+  `docker compose up`
+
+- To Stop the compose file
+  `docker compose down`
