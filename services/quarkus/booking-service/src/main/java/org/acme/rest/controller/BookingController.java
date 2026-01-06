@@ -1,8 +1,15 @@
 package org.acme.rest.controller;
 
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import org.acme.rest.entity.BookingEntity;
+import org.acme.rest.service.BookingService;
+import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.jboss.logging.Logger;
 
 @RolesAllowed("USER")
 @Path("/bookings")
@@ -11,13 +18,23 @@ import jakarta.ws.rs.core.Response;
 @Consumes(MediaType.APPLICATION_JSON)
 public class BookingController {
 
+    private static final Logger LOG = Logger.getLogger(BookingController.class);
+
     @Inject
     JsonWebToken jwt;
 
+    @Inject
+    BookingService bookingService;
+
     @GET
     @Path("/{id}")
-    public Response getBooking(@PathParam("id") String id) {
-        return Response.ok().build();
+    public Response getBooking(@PathParam("id") Long id) {
+        BookingEntity bookingId = bookingService.getBookingById(id);
+        if (bookingId == null) {
+            LOG.error("Booking not found for id: " + id);
+            return Response.status(404).build();
+        }
+        return Response.ok(bookingId).build();
     }
 
     @POST

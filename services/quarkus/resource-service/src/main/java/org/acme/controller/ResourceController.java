@@ -1,8 +1,8 @@
 package org.acme.controller;
 
+import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -15,9 +15,10 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import java.util.List;
 import java.util.Map;
 
+
 @RolesAllowed("USER")
 @Path("/resources")
-@RequestScoped
+@Authenticated
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 @ApplicationScoped
@@ -81,14 +82,13 @@ public class ResourceController {
         return Response.ok().build();
     }
 
+    @Path("/test-jwt")
     @GET
-    @Path("/test")
-    public Object test() {
-        return Map.of(
-                "sub", jwt.getSubject(),
-                "email", jwt.getClaim("email"),
-                "groups", jwt.getGroups()
-        );
+    public Response getResourcesTest() {
+        System.out.println("JWT groups: " + jwt.getGroups());
+        System.out.println("JWT name: " + jwt.getName());
+        List<ResourceEntity> allResources = resourceRepository.listAll();
+        return Response.ok(allResources).build();
     }
 
 }

@@ -130,6 +130,8 @@ services:
       QUARKUS_DATASOURCE_USERNAME: ${RESOURCE_USER}
       QUARKUS_DATASOURCE_PASSWORD: ${RESOURCE_PWD}
       JAVA_OPTS: "-Xms128m -Xmx256m"
+      MP_JWT_VERIFY_PUBLICKEY: ${PEM_KEY}
+    user: "1001:0"
     ports:
       - "${RESOURCES_SERVICE}:8080"
     volumes:

@@ -16,3 +16,7 @@ ReserveIt is a web application designed to facilitate the reservation of resourc
 
 - To Stop the compose file
   `docker compose down`
+
+# Booking Service GraphQL UI
+
+- The GraphQL UI can be accessed from http://localhost:8080/q/graphql-ui/ .
