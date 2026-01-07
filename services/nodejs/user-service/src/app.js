@@ -25,6 +25,6 @@ app.get("/health", (req, res) => {
 });
 
 
-app.use("/api/user", userRoutes);
+app.use("/api", userRoutes);
 
 app.listen(PORT, () => console.log(`User Service running on port ${PORT}`));
