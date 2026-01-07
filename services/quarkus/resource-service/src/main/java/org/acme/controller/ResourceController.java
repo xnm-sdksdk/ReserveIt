@@ -40,6 +40,9 @@ public class ResourceController {
     @Transactional
     @RolesAllowed("USER")
     public ResourceEntity createResource(ResourceEntity resource) {
+         if (resource == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
         return resourceRepository.createResource(resource);
     }
 

@@ -38,19 +38,28 @@ public class BookingController {
     }
 
     @POST
-    public Response createBooking(String bookingData) {
-        return Response.status(Response.Status.CREATED).build();
+    public Response createBooking(BookingEntity bookingData) {
+        if (bookingData == null) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+        BookingEntity createdBooking = bookingService.createBooking(bookingData);
+        return Response.status(Response.Status.CREATED).entity(createdBooking).build();
     }
 
     @PATCH
     @Path("/{id}")
-    public Response updateBooking(@PathParam("id") String id, String bookingData) {
+    public Response updateBooking(@PathParam("id") Long id, String bookingData) {
         return Response.ok().build();
     }
 
     @DELETE
     @Path("/{id}")
-    public Response deleteBooking(@PathParam("id") String id) {
+    public Response deleteBooking(@PathParam("id") Long id) {
+        Long deletedId = bookingService.deleteBooking(id);
+        if (deletedId == null) {
+            LOG.error("Booking not found for id: " + id);
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         return Response.noContent().build();
     }
 

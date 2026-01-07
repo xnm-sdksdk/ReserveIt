@@ -13,4 +13,7 @@ public interface BookingService {
     public BookingSchema getBookingByQueryId(Long id);
 
 
+    BookingEntity createBooking(BookingEntity bookingData);
+
+    Long deleteBooking(Long id);
 }

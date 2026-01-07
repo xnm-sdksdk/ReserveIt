@@ -2,6 +2,7 @@ package org.acme.rest.service.Impl;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
 import org.acme.graphql.schema.BookingSchema;
 import org.acme.rest.entity.BookingEntity;
 import org.acme.rest.repository.BookingRepository;
@@ -34,5 +35,17 @@ public class BookingServiceImpl  implements BookingService {
     @Override
     public BookingSchema getBookingByQueryId(Long id) {
         return null;
+    }
+
+    @Override
+    @Transactional
+    public BookingEntity createBooking(BookingEntity bookingData) {
+        return bookingRepository.createBooking(bookingData);
+    }
+
+    @Override
+    @Transactional
+    public Long deleteBooking(Long id) {
+        return bookingRepository.deleteBooking(id);
     }
 }
