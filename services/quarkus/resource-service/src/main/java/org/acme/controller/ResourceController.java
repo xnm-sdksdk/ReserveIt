@@ -10,10 +10,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.acme.entity.ResourceEntity;
 import org.acme.repository.ResourceRepository;
+import org.acme.service.ResourceService;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.List;
-import java.util.Map;
 
 
 @RolesAllowed("USER")
@@ -27,11 +27,13 @@ public class ResourceController {
 
     private final ResourceRepository resourceRepository;
     private final JsonWebToken jwt;
+    private final ResourceService resourceService;
 
     @Inject
-    public ResourceController(ResourceRepository resourceRepository, JsonWebToken jwt) {
+    public ResourceController(ResourceRepository resourceRepository, JsonWebToken jwt, ResourceService resourceService) {
         this.resourceRepository = resourceRepository;
         this.jwt = jwt;
+        this.resourceService= resourceService;
     }
 
 
@@ -39,11 +41,12 @@ public class ResourceController {
     @POST
     @Transactional
     @RolesAllowed("USER")
-    public ResourceEntity createResource(ResourceEntity resource) {
+    public Response createResource(ResourceEntity resource) {
          if (resource == null) {
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
-        return resourceRepository.createResource(resource);
+         ResourceEntity createdResource = resourceService.createResource(resource);
+        return Response.status(Response.Status.CREATED).entity(createdResource).build();
     }
 
     @GET
@@ -85,13 +88,5 @@ public class ResourceController {
         return Response.ok().build();
     }
 
-    @Path("/test-jwt")
-    @GET
-    public Response getResourcesTest() {
-        System.out.println("JWT groups: " + jwt.getGroups());
-        System.out.println("JWT name: " + jwt.getName());
-        List<ResourceEntity> allResources = resourceRepository.listAll();
-        return Response.ok(allResources).build();
-    }
 
 }

@@ -19,4 +19,7 @@ public class ResourceRepository implements PanacheRepository<ResourceEntity> {
         return deleteById(id);
     }
 
+    public ResourceEntity getResource(Long id) {
+        return findById(id);
+    }
 }
